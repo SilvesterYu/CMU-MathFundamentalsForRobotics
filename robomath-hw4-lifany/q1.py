@@ -12,11 +12,12 @@ def y_prime(y):
 
 # create a table with x, true y, numerical y and error
 def create_table(x_vals, y_true, y_numerical, my_title=""):
-    table = np.hstack([x_vals, y_true, y_numerical, y_true - y_numerical])
-    print(table)
-    err = np.absolute(y_true - y_numerical)
+    table = np.stack([x_vals, y_true, y_numerical, y_true - y_numerical], axis = 1)
+    df = pd.DataFrame(data = table)
+    df.columns = ["x_i", "True y(x_i)", "Numerical y_i", "Err y_i - y(x_i)"]
+    err = np.absolute((y_true - y_numerical)**2)
     max_err, mean_err = np.max(err), np.mean(err)
-    print("Maximum error", max_err, "Mean error", mean_err)
+    print("Error metric: mean squared error\n", "Maximum error", max_err, "\n", "Mean error", mean_err)
     return
 
 # plot the results
@@ -35,12 +36,10 @@ def Euler(x_vals, x0, y0):
     y_numerical = [y0]
     sign = 1 if x0 == interval[0] else -1
     yn = y0
-
     for i in range(len(x_vals)-1):
         yn1 = yn + sign * h * y_prime(yn)
         y_numerical.append(yn1)
         yn = yn1
-    
     return np.array(y_numerical[::sign])
 
 

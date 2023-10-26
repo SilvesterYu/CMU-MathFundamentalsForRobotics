@@ -29,7 +29,7 @@ def plotting(x_vals, y_true, y_numerical, my_title=""):
     plt.ylabel('y')
     plt.title(my_title)
     plt.legend()
-    plt.savefig("_".join(my_title.split()) + ".png")
+    plt.savefig("results/" + "_".join(my_title.split()) + ".png")
     plt.show()
     
 # question (a)
@@ -54,7 +54,12 @@ if __name__ == "__main__":
 
     # Question (a)
     y_numerical1 = Euler(x_vals, x0, y0)
-    print("(a) y true ", y_true)
-    print("(a) Euler's method y numerical ", y_numerical1)
     create_table(x_vals, y_true, y_numerical1, "Euler's method")
     plotting(x_vals, y_true, y_numerical1, "Euler's method")
+
+    # Question (b)
+    '''
+    y_numerical1 = Euler(x_vals, x0, y0)
+    create_table(x_vals, y_true, y_numerical1, "method")
+    plotting(x_vals, y_true, y_numerical1, " method")
+    '''

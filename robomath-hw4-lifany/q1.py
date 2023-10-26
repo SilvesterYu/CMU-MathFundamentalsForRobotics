@@ -15,10 +15,10 @@ def create_table(x_vals, y_true, y_numerical, my_title=""):
     table = np.stack([x_vals, y_true, y_numerical, y_true - y_numerical], axis = 1)
     df = pd.DataFrame(data = table)
     df.columns = ["x_i", "True y(x_i)", "Numerical y_i", "Err y(x_i) - y_i"]
-    err = np.absolute((y_true - y_numerical)**2)
+    err = np.absolute(y_true - y_numerical)
     max_err, mean_err = np.max(err), np.mean(err)
     print("\nTable for " + my_title + " :\n", df)
-    print("\nError metric: mean squared error\n", "Maximum error", max_err, "\n", "Mean error", mean_err)
+    print("\nError metric: mean absolute error\n", "Maximum error", max_err, "\n", "Mean error", mean_err)
     return
 
 # plot the results
@@ -32,7 +32,7 @@ def plotting(x_vals, y_true, y_numerical, my_title=""):
     plt.savefig("results/" + "_".join(my_title.split()) + ".png")
     plt.show()
     
-# question (a)
+# question (b)
 def Euler(x_vals, x0, y0):
     y_numerical = [y0]
     sign = 1 if x0 == interval[0] else -1
@@ -52,12 +52,12 @@ if __name__ == "__main__":
     x0, y0 = 1, 1
     y_true = y(x_vals)
 
-    # Question (a)
+    # Question (b)
     y_numerical1 = Euler(x_vals, x0, y0)
     create_table(x_vals, y_true, y_numerical1, "Euler's method")
     plotting(x_vals, y_true, y_numerical1, "Euler's method")
 
-    # Question (b)
+    # Question (c)
     '''
     y_numerical1 = Euler(x_vals, x0, y0)
     create_table(x_vals, y_true, y_numerical1, "method")

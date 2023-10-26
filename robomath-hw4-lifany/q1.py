@@ -12,7 +12,7 @@ def y_prime(y):
 
 # create a table with x, true y, numerical y and error
 def create_table(x_vals, y_true, y_numerical, my_title=""):
-    table = np.stack([x_vals, y_true, y_numerical, y_true - y_numerical], axis = 1)
+    table = np.stack([x_vals, y_true, y_numerical, y_true - y_numerical], axis = 1)[::-1]
     df = pd.DataFrame(data = table)
     df.columns = ["x_i", "True y(x_i)", "Numerical y_i", "Err y(x_i) - y_i"]
     err = np.absolute(y_true - y_numerical)
@@ -42,6 +42,21 @@ def Euler(x_vals, x0, y0):
         y_numerical.append(yn1)
         yn = yn1
     return np.array(y_numerical[::sign])
+  
+# question (c)
+def RungeKutta(x_vals, x0, y0):
+    y_numerical = [y0]
+    sign = 1 if x0 == interval[0] else -1
+    yn = y0
+    for i in range(len(x_vals)-1):
+        k1 = h * sign * y_prime(yn)
+        k2 = h * sign * y_prime(yn + k1/2)
+        k3 = h * sign * y_prime(yn + k2/2)
+        k4 = h * sign * y_prime(yn + k3)
+        yn1 = yn + (1/6) * (k1 + 2*k2 + 2*k3 + k4)
+        y_numerical.append(yn1)
+        yn = yn1
+    return np.array(y_numerical[::sign])
 
 
 if __name__ == "__main__":
@@ -58,8 +73,7 @@ if __name__ == "__main__":
     plotting(x_vals, y_true, y_numerical1, "Euler's method")
 
     # Question (c)
-    '''
-    y_numerical1 = Euler(x_vals, x0, y0)
-    create_table(x_vals, y_true, y_numerical1, "method")
-    plotting(x_vals, y_true, y_numerical1, " method")
-    '''
+    y_numerical2 = RungeKutta(x_vals, x0, y0)
+    create_table(x_vals, y_true, y_numerical2, "Runge-Kutta method")
+    plotting(x_vals, y_true, y_numerical2, " Runge-Kutta method")
+    

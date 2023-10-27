@@ -58,6 +58,17 @@ def RungeKutta(x_vals, x0, y0):
         yn = yn1
     return np.array(y_numerical[::sign])
 
+# question (d)
+def AdamsBashforth(x_vals, x0, y0):
+    y_numerical = [y0]
+    sign = 1 if x0 == interval[0] else -1
+    yn, yn_1, yn_2, yn_3 = y0, 1.03306155414651, 1.06560223676661, 1.09765339982501
+    for i in range(len(x_vals)-1):
+        fn, fn_1, fn_2, fn_3 = y_prime(yn), y_prime(yn_1), y_prime(yn_2), y_prime(yn_3)
+        yn1 = yn + (h/24) * sign * (55 * fn - 59 * fn_1 + 37 * fn_2 - 9 * fn_3)
+        y_numerical.append(yn1)
+        yn, yn_1, yn_2, yn_3 = yn1, yn, yn_1, yn_2
+    return np.array(y_numerical[::sign])
 
 if __name__ == "__main__":
     # Known data
@@ -75,5 +86,9 @@ if __name__ == "__main__":
     # Question (c)
     y_numerical2 = RungeKutta(x_vals, x0, y0)
     create_table(x_vals, y_true, y_numerical2, "Runge-Kutta method")
-    plotting(x_vals, y_true, y_numerical2, " Runge-Kutta method")
-    
+    plotting(x_vals, y_true, y_numerical2, "Runge-Kutta method")
+
+    # Question (d)
+    y_numerical2 = AdamsBashforth(x_vals, x0, y0)
+    create_table(x_vals, y_true, y_numerical2, "Adams-Bashforth method")
+    plotting(x_vals, y_true, y_numerical2, "Adams-Bashforth method")

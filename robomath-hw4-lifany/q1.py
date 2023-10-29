@@ -31,6 +31,18 @@ def plotting(x_vals, y_true, y_numerical, my_title=""):
     plt.legend()
     plt.savefig("results/" + "_".join(my_title.split()) + ".png")
     plt.show()
+
+def plot_multiple(x_vals, y_true, y1, y2, y3, my_title=""):
+    plt.plot(x_vals, y_true, color ='limegreen', linewidth = 5, label ='True y')
+    plt.plot(x_vals, y1, color ='purple', linestyle ='dashed', linewidth = 2, label ='Numerical y Euler')
+    plt.plot(x_vals, y2, color ='red', linestyle ='dashed', linewidth = 2, label ='Numerical y Runge-Kutta')
+    plt.plot(x_vals, y3, color ='blue', linestyle ='dashed', linewidth = 2, label ='Numerical y Adams-Bashforth')
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.title(my_title)
+    plt.legend()
+    plt.savefig("results/" + "_".join(my_title.split()) + ".png")
+    plt.show()
     
 # question (b)
 def Euler(x_vals, x0, y0):
@@ -89,6 +101,9 @@ if __name__ == "__main__":
     plotting(x_vals, y_true, y_numerical2, "Runge-Kutta method")
 
     # Question (d)
-    y_numerical2 = AdamsBashforth(x_vals, x0, y0)
-    create_table(x_vals, y_true, y_numerical2, "Adams-Bashforth method")
-    plotting(x_vals, y_true, y_numerical2, "Adams-Bashforth method")
+    y_numerical3 = AdamsBashforth(x_vals, x0, y0)
+    create_table(x_vals, y_true, y_numerical3, "Adams-Bashforth method")
+    plotting(x_vals, y_true, y_numerical3, "Adams-Bashforth method")
+
+    # Visualize all results
+    plot_multiple(x_vals, y_true, y_numerical1, y_numerical2, y_numerical3, my_title="All results")

@@ -25,30 +25,114 @@ def main():
 
     # FURTHER CODE HERE
     print(obstacle_cost.shape)
-    mew_path = gradient_optimization(initial_path, gx, gy)
-    plot_path(mew_path, obstacle_cost)
 
-# --
+    # (a)
+    #new_path = gradient_optimization(initial_path, gx, gy)
+    #plot_path(new_path, obstacle_cost)
+
+    # (b)
+    # new_path2 = gradient_optimization2(initial_path, gx, gy)
+    # plot_path(new_path2, obstacle_cost)
+
+    # (c)
+    new_path3 = gradient_optimization3(initial_path, gx, gy, 5000)
+    plot_path(new_path3, obstacle_cost)
+    new_path3 = gradient_optimization3(initial_path, gx, gy, 100)
+    plot_path(new_path3, obstacle_cost)
+
+# --#
+# for question (a)
 def gradient_optimization(initial_path, gx, gy, l2_thresh = 0.02):
 
     N = len(initial_path)
     l2_diff = np.Inf
-    new_path, curr_path = copy.deepcopy(initial_path), copy.deepcopy(initial_path)
+    new_path, curr_path = copy.deepcopy(initial_path)[1:-1], copy.deepcopy(initial_path)[1:-1]
     xarr, yarr = np.arange(0, gx.shape[1]), np.arange(0, gx.shape[0])
     gx_interp, gy_interp = RectBivariateSpline(xarr, yarr, gx), RectBivariateSpline(xarr, yarr, gy)
     iter = 0
 
     while l2_diff > l2_thresh:
-        xs, ys = curr_path[1:-1, 0], curr_path[1:-1, 1]
+        xs, ys = curr_path[:, 0], curr_path[:, 1]
         us = [gx_interp.ev(xs, ys), gy_interp.ev(xs, ys)]
         xs_new, ys_new = xs - 0.1*us[0], ys - 0.1*us[1]
-        new_path[1:-1, 0], new_path[1:-1, 1] = xs_new, ys_new 
+        new_path[:, 0], new_path[:, 1] = xs_new, ys_new 
         l2_diff = np.linalg.norm(new_path - curr_path)
         curr_path = copy.deepcopy(new_path)
         print("iter", iter, "diff", l2_diff)
         iter += 1
-        
+        #break
+
+    new_path = np.vstack((np.vstack((initial_path[0].reshape(1, 2), new_path)), initial_path[-1].reshape(1, 2)))
+    print(new_path)
     return new_path
+
+# for question (b)
+def gradient_optimization2(initial_path, gx, gy, l2_thresh = 0.02):
+
+    N = len(initial_path)
+    l2_diff = np.Inf
+    new_path, curr_path = copy.deepcopy(initial_path)[1:-1], copy.deepcopy(initial_path)[1:-1]
+    xarr, yarr = np.arange(0, gx.shape[1]), np.arange(0, gx.shape[0])
+    gx_interp, gy_interp = RectBivariateSpline(xarr, yarr, gx), RectBivariateSpline(xarr, yarr, gy)
+    iter = 0
+
+    while l2_diff > l2_thresh:
+        xs, ys = curr_path[:, 0], curr_path[:, 1]
+        us = [gx_interp.ev(xs, ys), gy_interp.ev(xs, ys)]
+        # --modification
+        prev_path= np.vstack((initial_path[0].reshape(1, 2), curr_path[:-1]))
+        xs_prev, ys_prev = prev_path[:, 0], prev_path[:, 1]
+        smoothness_cost_x, smoothness_cost_y = (xs - xs_prev), (ys - ys_prev)
+        x_step = - 0.8*us[0] - 4*smoothness_cost_x
+        y_step = - 0.8*us[1] - 4*smoothness_cost_y
+        xs_new, ys_new = xs + 0.1*x_step, ys + 0.1*y_step
+        # -- end of modification
+        new_path[:, 0], new_path[:, 1] = xs_new, ys_new 
+        l2_diff = np.linalg.norm(new_path - curr_path)
+        curr_path = copy.deepcopy(new_path)
+        print("iter", iter, "diff", l2_diff)
+        if iter == 100:
+            break
+        iter += 1
+
+    new_path = np.vstack((np.vstack((initial_path[0].reshape(1, 2), new_path)), initial_path[-1].reshape(1, 2)))
+    return new_path
+
+# for question (c)
+def gradient_optimization3(initial_path, gx, gy, iter_thresh):
+
+    N = len(initial_path)
+    l2_diff = np.Inf
+    new_path, curr_path = copy.deepcopy(initial_path)[1:-1], copy.deepcopy(initial_path)[1:-1]
+    xarr, yarr = np.arange(0, gx.shape[1]), np.arange(0, gx.shape[0])
+    gx_interp, gy_interp = RectBivariateSpline(xarr, yarr, gx), RectBivariateSpline(xarr, yarr, gy)
+    iter = 0
+
+    while iter < iter_thresh:
+        xs, ys = curr_path[:, 0], curr_path[:, 1]
+        us = [gx_interp.ev(xs, ys), gy_interp.ev(xs, ys)]
+        # --modification
+        prev_path= np.vstack((initial_path[0].reshape(1, 2), curr_path[:-1]))
+        next_path = np.vstack((curr_path[1:], initial_path[-1].reshape(1, 2)))
+        xs_prev, ys_prev = prev_path[:, 0], prev_path[:, 1]
+        xs_next, ys_next = next_path[:, 0], next_path[:, 1]
+        smoothness_cost_x, smoothness_cost_y = -xs_prev + 2*xs - xs_next, -ys_prev + 2*ys - ys_next
+        # -- end of modification
+        x_step = - 0.8*us[0] - 4*smoothness_cost_x
+        y_step = - 0.8*us[1] - 4*smoothness_cost_y
+        xs_new, ys_new = xs + 0.1*x_step, ys + 0.1*y_step
+        new_path[:, 0], new_path[:, 1] = xs_new, ys_new 
+        l2_diff = np.linalg.norm(new_path - curr_path)
+        curr_path = copy.deepcopy(new_path)
+        print("iter", iter, "diff", l2_diff)
+        iter += 1
+
+    new_path = np.vstack((np.vstack((initial_path[0].reshape(1, 2), new_path)), initial_path[-1].reshape(1, 2)))
+    return new_path
+
+
+
+# --
 
 # for i in range(1, N-1):
         #     x, y = curr_path[i][0], curr_path[i][1]

@@ -21,18 +21,17 @@ def main():
         np.outer(np.linspace(0, 1, num_pts), vector)
 
     # plot_scene(initial_path, obstacle_cost)
-    #plot_path(initial_path, obstacle_cost)
+    plot_path(initial_path, obstacle_cost)
 
     # FURTHER CODE HERE
-    print(obstacle_cost.shape)
 
     # (a)
-    #new_path = gradient_optimization(initial_path, gx, gy)
-    #plot_path(new_path, obstacle_cost)
+    new_path = gradient_optimization(initial_path, gx, gy)
+    plot_path(new_path, obstacle_cost)
 
     # (b)
-    # new_path2 = gradient_optimization2(initial_path, gx, gy)
-    # plot_path(new_path2, obstacle_cost)
+    new_path2 = gradient_optimization2(initial_path, gx, gy)
+    plot_path(new_path2, obstacle_cost)
 
     # (c)
     new_path3 = gradient_optimization3(initial_path, gx, gy, 5000)
@@ -91,8 +90,8 @@ def gradient_optimization2(initial_path, gx, gy, l2_thresh = 0.02):
         l2_diff = np.linalg.norm(new_path - curr_path)
         curr_path = copy.deepcopy(new_path)
         print("iter", iter, "diff", l2_diff)
-        if iter == 100:
-            break
+        # if iter == 100:
+        #     break
         iter += 1
 
     new_path = np.vstack((np.vstack((initial_path[0].reshape(1, 2), new_path)), initial_path[-1].reshape(1, 2)))
